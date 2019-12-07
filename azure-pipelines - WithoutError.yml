@@ -31,5 +31,5 @@ stages:
         displayName: 'Publish Test Results test-all.trx'
         inputs:
           testResultsFormat: VSTest
-          testResultsFiles: 'largetests.trx.trx'
+          testResultsFiles: 'largetests.trx'
           searchFolder: 'D:\AbortedProj'
