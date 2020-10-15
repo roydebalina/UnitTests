@@ -1,0 +1,71 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+stages:
+- stage: 
+  displayName: Build
+  jobs:  
+  - job: Build
+    displayName: Build job
+    pool:
+      name: default
+    steps:
+      - task: NuGetToolInstaller@0
+
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: '$(solution)'
+
+      - task: VSBuild@1
+        displayName: Build solution
+        inputs:
+          solution: '$(solution)'
+          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
+
+      - script: echo "L0 Tests"
+        displayName: L0 tests
+
+      - script: echo "L1 Tests"
+        displayName: L0 tests
+
+      - script: echo "Publish test results"
+        displayName: Publish test results
+
+      - script: echo "Update artifacts"
+        displayName: Update artifacts
+
+      - script: echo "Publish to artifact services"
+        displayName: Publish to artifact services
+
+- stage: 
+  displayName: Staging
+  jobs:
+  - job: Staging
+    displayName: Deploy to kubernetes
+    pool:
+      name: default
+    steps:
+    - checkout: none
+    - script: echo "Deploy project"
+      displayName: Deploy
+
+- stage: 
+  displayName: Prod
+  jobs:
+  - job: Deploy
+    displayName: Deploy to kubernetes
+    pool:
+      name: default
+    steps:
+    - checkout: none
+    - script: echo "Deploy project"
+      displayName: Deploy
